@@ -5,11 +5,22 @@ class MoviesController < ApplicationController
     if params[:query].present?
       @movies = @movies.where('title ILIKE ?', "%#{params[:query]}%")
     end
+    # condition, if html, give html. if text, give text
+    respond_to do |format|
+      format.html # Follow regular flow of Rails
+      format.text { render partial: 'movies/list', locals: { movies: @movies }, formats: [:html] }
+    end
   end
 
   def update
-    # TODO
-    raise
+    @movie = Movie.find(params[:id])
+    @movie.update(movie_params)
+    # if html, redirect to movies path
+    # if text, render movies_info partial
+    respond_to do |format|
+      format.html { redirect_to movies_path }
+      format.text { render partial: 'movies/movie_infos', locals: { movie: @movie }, formats: [:html] }
+    end
   end
 
   private
